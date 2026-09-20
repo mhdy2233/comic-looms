@@ -17,6 +17,7 @@ import { evLog } from "./utils/ev-log";
 import { Filter } from "./filter";
 import { ContextMenu } from "./ui/context-menu";
 import { ReadingProgress } from "./reading-progress";
+import { initInkTranslateUI } from "./ink/ink-ui";
 
 // Dynamically import the modules under ./platform/matchers, in which ADAPTER.addSetup will be executed
 const modules = import.meta.glob('./platform/matchers/*.ts', { eager: true });
@@ -45,6 +46,7 @@ function setup(): DestoryFunc {
   const events = initEvents(HTML, BIFM, FVGM, IFQ, IL, PH);
   addEventListeners(events, HTML, BIFM, DL, PH);
   new ContextMenu(HTML, FVGM, events.appEvents);
+  const INK = initInkTranslateUI(HTML, IFQ, () => PF.chapters);
 
   EBUS.subscribe("downloader-canvas-on-click", (index) => {
     IFQ.currIndex = index;
@@ -114,6 +116,7 @@ function setup(): DestoryFunc {
     entry(false);
     PF.abort();
     IL.abort();
+    INK.release();
     IFQ.length = 0;
     EBUS.reset();
     document.querySelector("#ehvp-base")?.remove();

@@ -17,6 +17,7 @@ import { Filter } from "../filter";
 import { linkify } from "../utils/linkify";
 import { ADAPTER } from "../platform/adapt";
 import { getDisplayText } from "./style-custom-panel";
+import { i18n } from "../utils/i18n";
 
 export type Elements = ReturnType<typeof createHTML>;
 
@@ -58,6 +59,7 @@ export function createHTML(filter: Filter) {
         </a>
         <a id="config-panel-btn" class="b-main-item clickable" hidden>${dt.config}</a>
         <a id="downloader-panel-btn" class="b-main-item clickable" hidden>${dt.download}</a>
+        <a id="ink-translate-btn" class="b-main-item clickable" hidden>${i18n.inkTranslate.get()}</a>
         <a id="chapters-panel-btn" class="b-main-item clickable" hidden>${dt.chapters}</a>
         <a id="filter-panel-btn" class="b-main-item clickable" hidden>${dt.filter}</a>
         <div id="read-mode-bar" class="b-main-item" hidden>
@@ -107,6 +109,7 @@ export function createHTML(filter: Filter) {
     pageHelper: q("#p-helper", root),
     configPanelBTN: q("#config-panel-btn", root),
     downloaderPanelBTN: q("#downloader-panel-btn", root),
+    inkTranslateBTN: q("#ink-translate-btn", root),
     chaptersPanelBTN: q("#chapters-panel-btn", root),
     filterPanelBTN: q("#filter-panel-btn", root),
     entryBTN: q("#entry-btn", root),

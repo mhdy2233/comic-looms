@@ -1,4 +1,4 @@
-import { ConfigBooleanType, ConfigTextType, ConfigNumberType, ConfigSelectType, ReadMode, saveConf } from "../config";
+import { ConfigBooleanType, ConfigTextType, ConfigNumberType, ConfigSelectType, ReadMode, inkConfigKeys, saveConf } from "../config";
 import EBUS from "../event-bus";
 import { IMGFetcherQueue } from "../fetcher-queue";
 import { IdleLoader } from "../idle-loader";
@@ -183,7 +183,13 @@ export function initEvents(HTML: Elements, BIFM: BigImageFrameManager, FVGM: Ful
       changeReadModeEvent();
       return;
     }
-    saveConf({ [key]: value }, ADAPTER.conf.selectedSiteNameConfig);
+    const inkKey = inkConfigKeys.find(inkKey => inkKey === key);
+    if (inkKey) {
+      ADAPTER.globalConf[inkKey] = value;
+      saveConf({ [inkKey]: value });
+    } else {
+      saveConf({ [key]: value }, ADAPTER.conf.selectedSiteNameConfig);
+    }
     if (key === "minifyPageHelper") {
       switch (ADAPTER.conf.minifyPageHelper) {
         case "always":
@@ -209,7 +215,13 @@ export function initEvents(HTML: Elements, BIFM: BigImageFrameManager, FVGM: Ful
       value = inputElement.value;
     }
     (ADAPTER.conf[key] as any) = value;
-    saveConf({ [key]: value }, ADAPTER.conf.selectedSiteNameConfig);
+    const inkKey = inkConfigKeys.find(inkKey => inkKey === key);
+    if (inkKey) {
+      ADAPTER.globalConf[inkKey] = value;
+      saveConf({ [inkKey]: value });
+    } else {
+      saveConf({ [key]: value }, ADAPTER.conf.selectedSiteNameConfig);
+    }
   }
 
   const cancelIDContext: Record<string, number> = {};

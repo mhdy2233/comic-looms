@@ -103,10 +103,10 @@ export class PageHelper {
           return downloading ? ["entry-btn", "page-status", "fin-status"] : ["entry-btn"];
         case 1:
           // hover in fullViewGrid
-          return ["page-status", "fin-status", "auto-page-btn", "config-panel-btn", "downloader-panel-btn", "chapters-panel-btn", "filter-panel-btn", "entry-btn"];
+          return ["page-status", "fin-status", "auto-page-btn", "config-panel-btn", "downloader-panel-btn", "ink-translate-btn", "chapters-panel-btn", "filter-panel-btn", "entry-btn"];
         case 2:
           // hover in bigImageFrame
-          return ["page-status", "fin-status", "auto-page-btn", "config-panel-btn", "downloader-panel-btn", "chapters-panel-btn", "entry-btn", "read-mode-bar", "pagination-adjust-bar", "scale-bar"];
+          return ["page-status", "fin-status", "auto-page-btn", "config-panel-btn", "downloader-panel-btn", "ink-translate-btn", "chapters-panel-btn", "entry-btn", "read-mode-bar", "pagination-adjust-bar", "scale-bar"];
         case 3:
           // minify
           return ["page-status", "auto-page-btn"];

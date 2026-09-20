@@ -1160,6 +1160,49 @@ Reporta problemas aquí: <a target='_blank' href='https://github.com/MapoMagpie/
 <p>Haz clic en el botón de <strong>Ayuda</strong> en la parte inferior del panel de configuración.</p>
 `,
   ],
+  // ink ocr translate
+  inkTranslate: [
+    'TRANSLATE',
+    '翻译',
+    '번역',
+    'Traducir'
+  ],
+  inkTranslating: [
+    'TRANSLATING {0}/{1}',
+    '翻译中 {0}/{1}',
+    '번역 중 {0}/{1}',
+    'Traduciendo {0}/{1}'
+  ],
+  inkTranslated: [
+    'TRANSLATED',
+    '已翻译',
+    '번역됨',
+    'Traducido'
+  ],
+  inkOCRBaseURL: [
+    'Ink OCR Base URL',
+    '墨识 OCR 地址',
+    'Ink OCR 주소',
+    'Ink OCR URL'
+  ],
+  inkOCRToken: [
+    'Ink OCR Token',
+    '墨识 OCR 令牌',
+    'Ink OCR 토큰',
+    'Ink OCR Token'
+  ],
+  inkOCRMode: [
+    'Ink OCR Mode',
+    '墨识 OCR 模型',
+    'Ink OCR 모드',
+    'Ink OCR Modo'
+  ],
+  inkFillMode: [
+    'Fill Mode',
+    '回填方式',
+    '채우기 방식',
+    'Modo de relleno'
+  ],
 } satisfies Record<string, Langs>;
 type I18nKeys = keyof (typeof i18nData);
 

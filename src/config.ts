@@ -76,6 +76,14 @@ export type Config = {
   /** 下载文件分卷大小，单位Mib */
   archiveVolumeSize: number
   pixivMirrorHost: string
+  /** 墨识 OCR 接口地址 */
+  inkOCRBaseURL: string,
+  /** 墨识 OCR 接口令牌 */
+  inkOCRToken: string,
+  /** OCR 识别模型: manga | balanced | npu | accurate | wechat */
+  inkOCRMode: string,
+  /** 回填方式: repair 背景修复 | solid 纯色覆盖 | mask 蒙版覆盖 */
+  inkFillMode: string,
   /** 自动收起控制面板 */
   autoCollapsePanel: boolean,
   /** 最小化控制栏 */
@@ -197,6 +205,10 @@ export function defaultConf(): Config {
     pixivRecordReading: false,
     pixivAscendWorks: false,
     pixivMirrorHost: "",
+    inkOCRBaseURL: "http://127.0.0.1:18765",
+    inkOCRToken: "",
+    inkOCRMode: "manga",
+    inkFillMode: "repair",
     filenameOrder: "auto",
     dragImageOut: false,
     excludeVideo: false,
@@ -233,7 +245,9 @@ function getStorageMethod() {
 
 const storage = getStorageMethod();
 
-export type SiteConfig = Partial<Config> & SiteProfile;
+export const inkConfigKeys = ["inkOCRBaseURL", "inkOCRToken", "inkOCRMode", "inkFillMode"] as const;
+
+export type SiteConfig = Partial<Omit<Config, typeof inkConfigKeys[number]>> & SiteProfile;
 
 export function getConf(): Config {
   const cfgStr = storage.getItem(CONFIG_KEY);
@@ -251,7 +265,9 @@ export function getConf(): Config {
 export function getSiteConfig(name: string): SiteConfig {
   const cfgStr = storage.getItem(getConfigKey(name));
   if (!cfgStr) return {}
-  return JSON.parse(cfgStr);
+  const config = JSON.parse(cfgStr);
+  for (const key of inkConfigKeys) delete config[key];
+  return config;
 }
 
 function confHealthCheck(cf: Config): Config {
@@ -326,6 +342,10 @@ function patchConfig(cf: Config): Config | null {
     cf.customStyle = "";
     changed = true;
   }
+  if (cf.configPatchVersion < 11) {
+    cf.configPatchVersion = 11;
+    changed = true;
+  }
   return changed ? cf : null;
 }
 
@@ -341,7 +361,7 @@ export function resetConf(name?: string) {
   };
   return ok;
 }
-export function saveConf(c: SiteConfig, name?: string) {
+export function saveConf(c: Partial<Config> & SiteProfile, name?: string) {
   const configKey = getConfigKey(name);
   const raw = storage.getItem(configKey);
   const config = raw ? JSON.parse(raw) : {};
@@ -349,7 +369,11 @@ export function saveConf(c: SiteConfig, name?: string) {
   if (name) {
     ["keyboards", "siteProfiles"].forEach(key => delete config[key]);
   }
-  storage.setItem(configKey, JSON.stringify({ ...config, ...c }));
+  const merged = { ...config, ...c };
+  if (name) {
+    for (const key of inkConfigKeys) delete merged[key];
+  }
+  storage.setItem(configKey, JSON.stringify(merged));
 }
 
 function getConfigKey(name?: string) {
@@ -399,9 +423,13 @@ export type ConfigSelectType = "readMode"
   | "hitomiFormat"
   | "ehentaiTitlePrefer"
   | "filenameOrder"
+  | "inkFillMode"
   ;
 export type ConfigTextType = "pixivMirrorHost"
   | "ehentaiMirrorHost"
+  | "inkOCRBaseURL"
+  | "inkOCRToken"
+  | "inkOCRMode"
   ;
 
 type OptionValue = {
@@ -450,6 +478,16 @@ export const ConfigItems: ConfigItem[] = [
   { key: "pixivAscendWorks", typ: "boolean", gridColumnRange: [1, 11], displayInSite: /pixiv.net/ },
   { key: "pixivMirrorHost", typ: "input", gridColumnRange: [1, 11], placeholder: "https://i.pixiv.re", displayInSite: /pixiv.net/ },
   { key: "ehentaiMirrorHost", typ: "input", gridColumnRange: [1, 11], placeholder: "https://e-hentai.org", displayInSite: /e[\-x]hentai.org/ },
+  { key: "inkOCRBaseURL", typ: "input", gridColumnRange: [1, 11], placeholder: "http://127.0.0.1:18765", displayInSite: /./ },
+  { key: "inkOCRToken", typ: "input", gridColumnRange: [1, 11], placeholder: "Ink OCR token", displayInSite: /./ },
+  { key: "inkOCRMode", typ: "input", gridColumnRange: [1, 11], placeholder: "manga | balanced | npu | accurate | wechat", displayInSite: /./ },
+  {
+    key: "inkFillMode", typ: "select", options: [
+      { value: "repair", display: "Repair" },
+      { value: "solid", display: "Solid" },
+      { value: "mask", display: "Mask" },
+    ]
+  },
   { key: "reverseMultipleImagesPost", typ: "boolean", gridColumnRange: [1, 11], displayInSite: /(x.com|twitter.com)\// },
   { key: "excludeVideo", typ: "boolean", gridColumnRange: [1, 11], displayInSite: /(x.com|twitter.com|kemono.cr)\// },
   {

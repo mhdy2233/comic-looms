@@ -1,4 +1,4 @@
-import { ConfigBooleanType, ConfigTextType, ConfigItem, ConfigItems, ConfigNumberType, ConfigSelectType, defaultConf, resetConf } from "../config";
+import { ConfigBooleanType, ConfigTextType, ConfigItem, ConfigItems, ConfigNumberType, ConfigSelectType, defaultConf, inkConfigKeys, resetConf } from "../config";
 import { ADAPTER } from "../platform/adapt";
 import { I18nValue, i18n } from "../utils/i18n";
 import q from "../utils/query-element";
@@ -141,7 +141,10 @@ function createOption(item: ConfigItem) {
     display = item.displayInSite.test(location.href);
   }
 
-  const conf = ADAPTER.conf.selectedSiteNameConfig ? ADAPTER.conf : ADAPTER.globalConf;
+  const isInkConfig = inkConfigKeys.some(key => key === item.key);
+  const siteSelected = ADAPTER.conf.selectedSiteNameConfig;
+  if (isInkConfig && siteSelected) display = false;
+  const conf = siteSelected && !isInkConfig ? ADAPTER.conf : ADAPTER.globalConf;
 
   let input = "";
   switch (item.typ) {

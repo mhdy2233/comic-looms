@@ -14,6 +14,7 @@ import { DEFAULT_THUMBNAIL } from "../img-node";
 import { ADAPTER } from "../platform/adapt";
 import { HTMLUgoiraElement } from "../utils/ugoira";
 import { SubData } from "../platform/platform";
+import { INK_TRANSLATED_SRC } from "../ink/ink-translate";
 
 type MediaElement = HTMLImageElement | HTMLVideoElement | HTMLUgoiraElement;
 type ViewportAxis = "x" | "y";
@@ -103,6 +104,10 @@ export class BigImageFrameManager {
       if (imf.chapterIndex !== this.chapterIndex) return;
       this.onResize(imf);
     });
+    EBUS.subscribe("imf-translated", (imf) => {
+      if (imf.chapterIndex !== this.chapterIndex) return;
+      this.replaceWithTranslated(imf);
+    });
     EBUS.subscribe("bifm-rotate-image", () => this.rotate(true));
 
     this.loadingHelper = document.createElement("span");
@@ -118,6 +123,17 @@ export class BigImageFrameManager {
     });
     // enable auto page
     new AutoPage(this, HTML.autoPageBTN);
+  }
+
+  replaceWithTranslated(imf: IMGFetcher) {
+    const src = INK_TRANSLATED_SRC(imf);
+    if (!src) return;
+    const element = this.container.querySelector<HTMLElement>(`div[d-index="${imf.index}"]`);
+    const media = element?.querySelector<HTMLImageElement>("img.bifm-img");
+    if (media && media.getAttribute("data-ink-src") !== src) {
+      media.setAttribute("data-ink-src", src);
+      media.src = src;
+    }
   }
 
   onResize(imf: IMGFetcher) {
@@ -847,7 +863,11 @@ export class BigImageFrameManager {
       img.classList.add("bifm-img");
       // img.draggable = !(conf.magnifier && conf.readMode !== "continuous");
       img.draggable = ADAPTER.conf.dragImageOut;
-      if (imf.stage === FetchState.DONE) {
+      const inkSrc = INK_TRANSLATED_SRC(imf);
+      if (inkSrc) {
+        img.setAttribute("data-ink-src", inkSrc);
+        img.src = inkSrc;
+      } else if (imf.stage === FetchState.DONE) {
         img.src = imf.node.blobSrc!;
       } else if (imf.node.thumbnailSrc) {
         img.src = imf.node.thumbnailSrc;

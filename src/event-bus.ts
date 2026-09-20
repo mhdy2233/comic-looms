@@ -69,6 +69,8 @@ export interface Events {
   "fvg-layout-change": () => void;
   "imf-resize": (imf: IMGFetcher) => void;
   "filter-update-all-tags": () => void;
+  "imf-translated": (imf: IMGFetcher) => void;
+  "ink-progress": () => void;
 }
 
 export type EventID = keyof Events;
