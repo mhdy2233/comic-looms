@@ -916,6 +916,18 @@ pero desactivará la lupa y la capacidad de arrastrar y mover imágenes.`,
 Report issues here: <a target="_blank" href="https://github.com/MapoMagpie/comic-looms/issues">issue</a></p>
 <h2>[How to Reopen the Guide?]</h2>
 <p>Click the <strong>Help</strong> button at the bottom of the configuration panel.</p>
+<h2>[What is the TRANSLATE Button?]</h2>
+<p>It translates the whole current chapter in one click using a local <strong>Ink OCR</strong> service: every large image is recognised, each text line is translated, the original lettering is cleared and the translation is drawn back in its place.</p>
+<p>The button sits between <strong>Download</strong> and <strong>Collapse</strong> and shows its progress, e.g. <strong>TRANSLATING 3/12</strong>. Click it again while it runs to stop. Press the button once more after a page reload, the translated pages are not kept.</p>
+<h4>Required settings:</h4>
+<ul>
+<li><strong>Ink OCR Base URL</strong>: address of the local service, <strong>http://127.0.0.1:18765</strong> by default.</li>
+<li><strong>Ink OCR Token</strong>: the API token from the Ink OCR app. It is required, an empty token fails every page with the service&#39;s own message.</li>
+<li><strong>Ink OCR Mode</strong>: recognition model, <strong>manga</strong> by default and the recommended value for comics.</li>
+<li><strong>Fill Mode</strong>: how the original text is removed. <strong>Repair</strong> reconstructs the background with the service model, <strong>Solid</strong> fills each text box with its dominant colour, <strong>Mask</strong> fills only the lettering pixels and keeps the artwork around them.</li>
+</ul>
+<p>These four options are stored globally only and cannot be overridden per site. The service must be running on the same machine; images are never uploaded anywhere else.</p>
+<p>Translation changes only what you see in the big image reading view. Thumbnails keep showing the originals, and downloaded files always contain the original pixels.</p>
 `,
     `
 <h2>[如何使用？入口在哪里？]</h2>
@@ -995,6 +1007,18 @@ Report issues here: <a target="_blank" href="https://github.com/MapoMagpie/comic
 请在此反馈问题: <a target="_blank" href="https://github.com/MapoMagpie/comic-looms/issues">issue</a></p>
 <h2>[如何再次打开指南？]</h2>
 <p>在配置面板的下方，点击<strong>帮助</strong>按钮。</p>
+<h2>[翻译按钮是什么？]</h2>
+<p>它借助本机的<strong>墨识 OCR</strong>服务，一键翻译当前章节：先识别每一张大图，翻译每段文字，清除原文，再把译文画回原位。</p>
+<p>按钮位于<strong>下载</strong>与<strong>收起</strong>之间，运行时显示进度，例如<strong>翻译中 3/12</strong>。再点一次即可停止。刷新页面后需要重新点击，译图不会保留。</p>
+<h4>需要先配置：</h4>
+<ul>
+<li><strong>墨识 OCR 地址</strong>：本机服务地址，默认 <strong>http://127.0.0.1:18765</strong>。</li>
+<li><strong>墨识 OCR 令牌</strong>：墨识软件里的接口密钥，必填；为空时每一页都会失败并显示服务返回的原因。</li>
+<li><strong>墨识 OCR 模型</strong>：识别模型，默认 <strong>manga</strong>，也是漫画的推荐值。</li>
+<li><strong>回填方式</strong>：清除原文的方式。<strong>Repair</strong> 用服务模型重建背景，<strong>Solid</strong> 用文字框的主色整框覆盖，<strong>Mask</strong> 只覆盖文字笔画、保留周围画面。</li>
+</ul>
+<p>这四项只保存在全局配置，站点配置无法覆盖。服务需要在本机运行，图片不会上传到其他地方。</p>
+<p>翻译只改变大图阅读视图中的显示。缩略图仍为原图，下载得到的文件始终是原始像素。</p>
 `,
     `
 <h2>[사용 방법? 스크립트는 어떻게 실행되나요?]</h2>
@@ -1075,6 +1099,18 @@ Report issues here: <a target="_blank" href="https://github.com/MapoMagpie/comic
 
 <h2>[가이드를 다시 열려면?]</h2>
 <p>설정 패널 하단에 있는 <strong>도움말</strong> 버튼을 클릭하세요.</p>
+<h2>[번역 버튼은 무엇인가요?]</h2>
+<p>로컬 <strong>Ink OCR</strong> 서비스로 현재 챕터 전체를 한 번에 번역합니다. 큰 이미지를 인식하고, 각 문장을 번역한 뒤, 원문을 지우고 번역문을 원래 자리에 다시 그립니다.</p>
+<p>버튼은 <strong>다운로드</strong>와 <strong>접기</strong> 사이에 있으며 진행 상황을 표시합니다(예: <strong>번역 중 3/12</strong>). 실행 중 다시 누르면 중지됩니다. 페이지를 새로 고치면 번역 이미지는 유지되지 않으므로 다시 눌러야 합니다.</p>
+<h4>먼저 설정해야 할 항목:</h4>
+<ul>
+<li><strong>Ink OCR 주소</strong>: 로컬 서비스 주소이며 기본값은 <strong>http://127.0.0.1:18765</strong>입니다.</li>
+<li><strong>Ink OCR 토큰</strong>: Ink OCR 앱의 API 키입니다. 필수이며, 비어 있으면 모든 페이지가 실패하고 서비스가 반환한 이유가 표시됩니다.</li>
+<li><strong>Ink OCR 모드</strong>: 인식 모델이며 기본값 <strong>manga</strong>가 만화에 권장됩니다.</li>
+<li><strong>채우기 방식</strong>: 원문을 지우는 방식입니다. <strong>Repair</strong>는 서비스 모델로 배경을 복원하고, <strong>Solid</strong>는 글자 영역을 대표색으로 채우며, <strong>Mask</strong>는 글자 획만 덮고 주변 그림은 유지합니다.</li>
+</ul>
+<p>이 네 가지 옵션은 전역 설정에만 저장되며 사이트별로 덮어쓸 수 없습니다. 서비스는 같은 컴퓨터에서 실행되어야 하고 이미지는 다른 곳으로 전송되지 않습니다.</p>
+<p>번역은 큰 이미지 읽기 화면의 표시만 바꿉니다. 썸네일은 원본을 유지하고, 다운로드한 파일은 항상 원본 픽셀입니다.</p>
 
 <h2>[해결되지 않은 문제들]</h2>
 <ul>
@@ -1158,6 +1194,18 @@ Report issues here: <a target="_blank" href="https://github.com/MapoMagpie/comic
 Reporta problemas aquí: <a target='_blank' href='https://github.com/MapoMagpie/comic-looms/issues'>issue</a></p>
 <h2>[¿Cómo reabrir la guía?]</h2>
 <p>Haz clic en el botón de <strong>Ayuda</strong> en la parte inferior del panel de configuración.</p>
+<h2>[¿Qué hace el botón TRANSLATE?]</h2>
+<p>Traduce todo el capítulo actual con un solo clic usando un servicio local <strong>Ink OCR</strong>: reconoce cada imagen grande, traduce cada línea de texto, borra el texto original y vuelve a dibujar la traducción en su lugar.</p>
+<p>El botón está entre <strong>Descargar</strong> y <strong>Contraer</strong> y muestra el progreso, por ejemplo <strong>Traduciendo 3/12</strong>. Pulsa de nuevo mientras se ejecuta para detenerlo. Tras recargar la página hay que pulsarlo otra vez, las páginas traducidas no se conservan.</p>
+<h4>Ajustes necesarios:</h4>
+<ul>
+<li><strong>Ink OCR URL</strong>: dirección del servicio local, por defecto <strong>http://127.0.0.1:18765</strong>.</li>
+<li><strong>Ink OCR Token</strong>: la clave de API de la aplicación Ink OCR. Es obligatoria; si está vacía, cada página falla con el mensaje del propio servicio.</li>
+<li><strong>Ink OCR Modo</strong>: modelo de reconocimiento, por defecto <strong>manga</strong>, el valor recomendado para cómics.</li>
+<li><strong>Modo de relleno</strong>: cómo se borra el texto original. <strong>Repair</strong> reconstruye el fondo con el modelo del servicio, <strong>Solid</strong> rellena cada cuadro con su color dominante y <strong>Mask</strong> cubre solo los trazos de las letras y conserva el dibujo alrededor.</li>
+</ul>
+<p>Estas cuatro opciones se guardan solo de forma global y no se pueden sobrescribir por sitio. El servicio debe ejecutarse en la misma máquina; las imágenes nunca se envían a otro lugar.</p>
+<p>La traducción solo cambia lo que se ve en el modo de lectura de imagen grande. Las miniaturas siguen mostrando los originales y los archivos descargados siempre contienen los píxeles originales.</p>
 `,
   ],
   // ink ocr translate
