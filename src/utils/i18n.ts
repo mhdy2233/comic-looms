@@ -1227,6 +1227,18 @@ Reporta problemas aquí: <a target='_blank' href='https://github.com/MapoMagpie/
     '번역됨',
     'Traducido'
   ],
+  inkQueued: [
+    'QUEUED',
+    '排队中',
+    '대기 중',
+    'En cola'
+  ],
+  inkRunning: [
+    'TRANSLATING',
+    '翻译中',
+    '번역 중',
+    'Traduciendo'
+  ],
   inkOCRBaseURL: [
     'Ink OCR Base URL',
     '墨识 OCR 地址',

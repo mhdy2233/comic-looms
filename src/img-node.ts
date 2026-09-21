@@ -3,6 +3,7 @@ import { DownloadState } from "./img-fetcher";
 import { Debouncer } from "./utils/debouncer";
 import { resizing } from "./utils/image-resizing";
 import { ADAPTER } from "./platform/adapt";
+import { i18n } from "./utils/i18n";
 
 export const DEFAULT_THUMBNAIL = "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
 
@@ -62,6 +63,7 @@ export default class ImageNode {
   rect?: Rect;
   tags: Set<string>;
   actions: NodeAction[] = [];
+  inkStatus?: "queued" | "running";
 
   get originSrc() {
     return this._originSrc;
@@ -170,6 +172,7 @@ export default class ImageNode {
       }
       this.root!.appendChild(actionContainer);
     });
+    this.setInkStatus(this.inkStatus);
     return this.root;
   }
 
@@ -326,6 +329,18 @@ export default class ImageNode {
       errorHintElement.innerHTML = `<span>${failedReason}</span><br><span style="color: white;">You can click here retry again,<br>Or press mouse middle button to open origin image url</span>`;
       this.root.firstElementChild!.appendChild(errorHintElement);
     }
+  }
+
+  setInkStatus(status?: "queued" | "running") {
+    this.inkStatus = status;
+    const container = this.root?.firstElementChild;
+    if (!container) return;
+    container.querySelector(".img-node-ink-status")?.remove();
+    if (!status) return;
+    const badge = document.createElement("div");
+    badge.classList.add("img-node-ink-status");
+    badge.textContent = (status === "queued" ? i18n.inkQueued : i18n.inkRunning).get();
+    container.appendChild(badge);
   }
 
   equal(ele: HTMLElement) {

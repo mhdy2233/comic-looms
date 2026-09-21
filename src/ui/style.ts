@@ -159,6 +159,21 @@ export function styleCSS() {
 .img-node:hover .img-node-numtip {
   display: block;
 }
+.img-node-ink-status {
+  position: absolute;
+  top: 0;
+  right: 0.5em;
+  z-index: 20;
+  font-size: 0.8em;
+  font-weight: 700;
+  padding: 0.2em 0.5em;
+  line-height: 1.2em;
+  border-radius: 0 0 0.5em 0.5em;
+  background-color: #1f1f1fc7;
+  color: #ffe785;
+  text-shadow: #000 1px 0 10px;
+  pointer-events: none;
+}
 .img-node > a {
   display: block;
   line-height: 0;

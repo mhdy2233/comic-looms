@@ -73,7 +73,7 @@ function validBounds(value: unknown): value is [number, number, number, number] 
 export class InkClient {
   constructor(private conf: InkAPIConf) { }
 
-  private request<T>(method: "GET" | "POST", path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+  private request<T>(method: "GET" | "POST" | "DELETE", path: string, body?: unknown, signal?: AbortSignal, timeoutMs = 600000): Promise<T> {
     const { promise, resolve, reject } = Promise.withResolvers<T>();
     let request: GmAsyncXmlhttpRequestReturnType<"text"> | undefined;
     let settled = false;
@@ -110,7 +110,7 @@ export class InkClient {
         method,
         url: this.conf.baseURL + path,
         responseType: "text",
-        timeout: 600000,
+        timeout: timeoutMs,
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${this.conf.token}`,
@@ -151,6 +151,22 @@ export class InkClient {
     return promise;
   }
 
+  /**
+   * OCR slots the service advertises for the configured mode.
+   * Any transport, HTTP, parsing or shape problem degrades to 1 (serial) instead of failing a chapter.
+   */
+  async ocrCapacity(): Promise<number> {
+    try {
+      const status = await this.request<{ engines?: { id?: unknown; concurrency?: unknown }[]; ocr?: { manga_workers?: unknown } }>("GET", "/v1/engines");
+      const engine = status?.engines?.find(entry => entry?.id === this.conf.mode)?.concurrency;
+      if (typeof engine === "number" && Number.isInteger(engine) && engine >= 1) return engine;
+      const workers = status?.ocr?.manga_workers;
+      return typeof workers === "number" && Number.isInteger(workers) && workers >= 1 ? workers : 1;
+    } catch {
+      return 1;
+    }
+  }
+
   async ocr(imageDataURL: string, signal?: AbortSignal): Promise<InkOCRResult> {
     signal?.throwIfAborted();
     const controller = new AbortController();
@@ -158,9 +174,23 @@ export class InkClient {
     signal?.addEventListener("abort", abort, { once: true });
     if (signal?.aborted) abort();
     const timeout = setTimeout(() => controller.abort(new Error("Ink OCR job timed out after 610 seconds")), 610000);
+    let jobID: string | undefined;
+    // Best-effort remote cancel: the aborted request keeps occupying a service slot until the backend notices.
+    // Swallowing the DELETE keeps the original cancellation error as the one the caller sees, and a fresh short-lived
+    // request is required because the aborting signal has already fired.
+    const cancelJob = () => {
+      const id = jobID;
+      jobID = undefined;
+      if (!id) return;
+      // Fire and forget: the DELETE must never delay the cancellation error the caller is waiting for.
+      void this.request("DELETE", `/v1/ocr/jobs/${encodeURIComponent(id)}`, undefined, undefined, 10000).catch(() => {
+        // The job may have finished or the service may be gone; cancellation is best effort.
+      });
+    };
     try {
       let job = await this.request<OCRJob>("POST", "/v1/ocr/jobs", { image: imageDataURL, mode: this.conf.mode }, controller.signal);
       controller.signal.throwIfAborted();
+      if (!controller.signal.aborted && job && typeof job.id === "string" && job.id) jobID = job.id;
       if (!job || typeof job.id !== "string" || !job.id) throw new Error("Ink OCR did not return a job ID");
       const path = `/v1/ocr/jobs/${encodeURIComponent(job.id)}`;
       while (true) {
@@ -210,6 +240,9 @@ export class InkClient {
         job = await this.request<OCRJob>("GET", path, undefined, controller.signal);
         if (!job) throw new Error("Ink OCR returned an invalid job");
       }
+    } catch (error) {
+      if (controller.signal.aborted) cancelJob();
+      throw error;
     } finally {
       clearTimeout(timeout);
       signal?.removeEventListener("abort", abort);
